@@ -5,3 +5,4 @@
 /apk/meizu.apk
 .idea
 *.iml
+node_modules
