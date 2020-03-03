@@ -1,0 +1,18 @@
+custom:
+  serverDomain: XXX
+  clientDomain: XXX
+  client-dist-path: XXX
+  system-superior-id: 1 #所有没填上级的注册用户，挂到这个人名下
+  qiniu-bucket-name: XXX
+
+spring:
+  datasource:
+    username: XXX
+    password: XXX
+
+logging:
+  level:
+    com.leemon.wushiwan.mapper: INFO
+    com.leemon.wushiwan.system.mapper: INFO
+    org.springframework.web: DEBUG
+    org.springframework.security: INFO

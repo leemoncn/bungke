@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.leemon.wushiwan.mapper.CoreMissionDetailMapper">
+
+	<sql id="selectMissionDetail">
+		SELECT cmd.*,
+		cm.id AS missionId,
+		cm.publish_time AS publishTime,
+		cm.top_end_time AS topEndTime,
+		cm.status_property_id,
+		cm.reason,
+		(SELECT cmd.count - COUNT(1) AS count
+		FROM core_mission_accept cma
+		WHERE cma.mission_id = cm.id
+		AND (cma.proceed_property_id = 21 or
+		cma.proceed_property_id = 22 or
+		(cma.proceed_property_id = 23 and cma.finish_time is null))) AS acceptableMissionCount
+	</sql>
+
+	<sql id="fromCmJoinCmd">
+		FROM core_mission cm
+		JOIN core_mission_detail cmd ON cm.mission_detail_id = cmd.id
+	</sql>
+
+
+	<update id="modifyMissionCount">
+		UPDATE core_mission_detail
+		SET count = count + #{changeCount}
+		WHERE id = #{missionDetailId}
+		  AND deleted = 0
+	</update>
+
+	<select id="selectCoreMissionDetailsByTypePropertyIdWithoutMyMissionAndAcceptedMission"
+			resultType="com.leemon.wushiwan.dto.MissionDetail">
+		SELECT * FROM (
+		<include refid="selectMissionDetail"/>
+		<choose>
+			<when test="isOrderByRenqi">
+				,IFNULL( cma.acceptCount, 0 ) AS orderCount
+			</when>
+			<when test="isOrderByYouxian">
+				,IFNULL( cma.finishCount, 0 ) AS orderCount
+			</when>
+		</choose>
+		<include refid="fromCmJoinCmd"/>
+		<choose>
+			<when test="isOrderByRenqi">
+				LEFT JOIN ( SELECT mission_id, count( * ) AS acceptCount FROM core_mission_accept WHERE accept_time >=
+				NOW() - INTERVAL 24 HOUR AND deleted = 0 GROUP BY mission_id ) cma ON cm.id = cma.mission_id
+			</when>
+			<when test="isOrderByYouxian">
+				LEFT JOIN ( SELECT mission_id, count( * ) AS finishCount FROM core_mission_accept
+				WHERE
+				finish_time IS NOT NULL
+				AND finish_time >= NOW() - INTERVAL 24 HOUR AND deleted = 0 GROUP BY mission_id ) cma
+				ON cm.id = cma.mission_id
+			</when>
+		</choose>
+		JOIN core_mission_rule cmr on cmd.type_property_id = cmr.type_property_id AND cmr.usable = 1
+		<if test="searchData != null and searchData != ''">
+			LEFT JOIN sys_user su on su.id = cmd.user_id
+		</if>
+		WHERE 1=1
+		<if test="typePropertyId != null">
+			AND cmd.type_property_id = #{typePropertyId}
+		</if>
+		<if test="deviceType != null">
+			AND (cmd.mobile_property_id = #{deviceType} OR cmd.mobile_property_id = 18)
+		</if>
+		<if test="searchData != null and searchData != ''">
+			AND (cmd.title LIKE CONCAT('%',#{searchData},'%') OR cmd.user_id LIKE CONCAT('%',#{searchData},'%') OR
+			su.nickname LIKE CONCAT('%',#{searchData},'%') OR cm.id LIKE CONCAT('%',#{searchData},'%'))
+		</if>
+		<if test="userId != null">
+			AND cm.user_id != #{userId}
+			AND cm.id NOT IN (select mission_id from core_mission_accept cma where cma.accept_user_id = #{userId} and
+			cma.finish_time IS NULL)
+		</if>
+		AND cm.status_property_id = 32
+		AND cm.deleted = 0
+		AND cmd.deleted = 0) p where p.acceptableMissionCount > 0
+	</select>
+
+	<select id="selectMissionDetailByMissionId" resultType="com.leemon.wushiwan.dto.MissionDetail">
+		<include refid="selectMissionDetail"/>
+		<include refid="fromCmJoinCmd"/>
+		WHERE cm.deleted = 0
+		AND cmd.deleted = 0
+		AND cm.id = #{missionId}
+	</select>
+
+	<select id="selectMyPublishedMissions" resultType="com.leemon.wushiwan.dto.MyPublishedMission">
+		<include refid="selectMissionDetail"/>,
+		(select count(1) from core_mission_accept cma
+		where cma.publish_user_id = cm.user_id
+		AND cma.mission_id = cm.id
+		AND cma.proceed_property_id = 22
+		AND cma.deleted = 0) waitingReviewCount,
+		(select count(1) from core_mission_accept cma
+		where cma.publish_user_id = cm.user_id
+		AND cma.mission_id = cm.id
+		AND cma.proceed_property_id = 23
+		AND cma.deleted = 0) rejectedCount,
+		(select count(1) from core_mission_accept cma
+		where cma.publish_user_id = cm.user_id
+		AND cma.mission_id = cm.id
+		AND cma.proceed_property_id = 24
+		AND cma.deleted = 0) finishCount
+		<include refid="fromCmJoinCmd"/>
+		WHERE cm.user_id = #{userId} AND cm.deleted = 0 AND cmd.deleted = 0
+	</select>
+
+	<select id="selectCoreMissionDetailByAcceptId" resultType="com.leemon.wushiwan.dto.FinishMissionInfo">
+		SELECT cmd.price, cma.accept_user_id acceptMissionUserId, cm.id missionId
+		FROM core_mission_detail cmd,
+			 core_mission_accept cma,
+			 core_mission cm
+		WHERE cma.id = #{acceptId}
+		  AND cma.mission_id = cm.id
+		  AND cm.mission_detail_id = cmd.id
+		  AND cmd.deleted = 0
+		  AND cma.deleted = 0
+		  AND cm.deleted = 0
+	</select>
+
+	<select id="searchMissionDetail" resultType="com.leemon.wushiwan.dto.MissionDetail">
+		<include refid="selectMissionDetail"/>
+		<include refid="fromCmJoinCmd"/>
+		WHERE cm.deleted = 0
+		AND cmd.deleted = 0
+		<if test="statusPropertyId != null">
+			AND cm.status_property_id = #{statusPropertyId}
+		</if>
+		<if test="publishUserId != null">
+			AND cm.user_id = #{publishUserId}
+		</if>
+	</select>
+
+	<select id="selectUsableRuleMissionDetailByMissionId" resultType="com.leemon.wushiwan.dto.MissionDetail">
+		<include refid="selectMissionDetail"/>
+		<include refid="fromCmJoinCmd"/>
+		JOIN core_mission_rule cmr on cmd.type_property_id = cmr.type_property_id AND cmr.usable = 1
+		WHERE cm.deleted = 0
+		AND cmd.deleted = 0
+		AND cm.id = #{missionId}
+	</select>
+
+	<select id="selectAllMissionOverDeadline" resultType="com.leemon.wushiwan.dto.MissionDetail">
+		<include refid="selectMissionDetail"/>
+		<include refid="fromCmJoinCmd"/>
+		WHERE cm.deleted = 0
+		AND cmd.deleted = 0
+		AND (cm.status_property_id = 28 or cm.status_property_id = 32)
+		AND cmd.deadline_time &lt;= now()
+	</select>
+</mapper>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.leemon.wushiwan.system.mapper.SysRoleMapper">
+
+	<select id="selectRolesByUserId" resultType="com.leemon.wushiwan.system.entity.SysRole">
+		SELECT sr.*
+		FROM sys_user_role sur,
+			 sys_role sr
+		WHERE sur.user_id = #{userId}
+		  AND sr.id = sur.role_id
+		  AND sr.useable = 1
+	</select>
+</mapper>

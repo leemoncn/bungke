@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.leemon.wushiwan.mapper.CoreTopMapper">
+
+	<select id="selectTodayTopRecord" resultType="com.leemon.wushiwan.entity.CoreTop">
+		select *
+		from core_top
+		where user_id = #{userId}
+		  and deleted = 0
+		  and TO_DAYS(create_time) = TO_DAYS(now())
+	</select>
+
+	<select id="selectLastCoreTop" resultType="com.leemon.wushiwan.entity.CoreTop">
+		select *
+		from core_top
+		where user_id = #{userId}
+		  and mission_id = #{missionId}
+		  and deleted = 0
+		order by top_end_time desc
+		limit 1
+	</select>
+
+</mapper>

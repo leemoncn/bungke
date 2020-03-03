@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.leemon.wushiwan.system.mapper.SysMenuMapper">
+
+	<resultMap id="TreeModel" type="com.leemon.wushiwan.system.vo.TreeModel">
+		<result column="id" property="key" jdbcType="VARCHAR"/>
+		<result column="name" property="title" jdbcType="VARCHAR"/>
+		<result column="icon" property="icon" jdbcType="VARCHAR"/>
+		<result column="parent_id" property="parentId" jdbcType="VARCHAR"/>
+	</resultMap>
+
+	<select id="selectMenuPermissionsByMenuIdList" resultType="java.lang.String">
+		SELECT
+		sm.permission
+		FROM
+		sys_menu sm
+		WHERE 1 = 1
+		AND sm.deleted = 0
+		<choose>
+			<when test="list.size() > 0">
+				<foreach collection="list" index="index" item="menuId" open="AND sm.id IN (" separator=" , " close=")">
+					#{menuId}
+				</foreach>
+			</when>
+			<otherwise>
+				AND 1 = 0
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="queryListByParentId" resultMap="TreeModel">
+		SELECT
+		id
+		,parent_id
+		,name
+		,icon
+		FROM sys_menu
+		WHERE 1=1
+		<choose>
+			<when test="parentId != null and parentId != ''">
+				AND parent_id = #{parentId,jdbcType=VARCHAR}
+			</when>
+			<otherwise>
+				AND parent_id is null
+			</otherwise>
+		</choose>
+		AND sys_menu.deleted = 0
+	</select>
+
+	<select id="queryByUserId" resultType="com.leemon.wushiwan.system.entity.SysMenu">
+		SELECT DISTINCT sm.*
+		FROM sys_menu sm,
+			 sys_role_menu srm,
+			 sys_user su,
+			 sys_user_role sur
+		WHERE su.id = #{userId}
+		  AND sur.user_id = su.id
+		  AND srm.role_id = sur.role_id
+		  AND sm.id = srm.menu_id
+		order by sm.sort ASC
+	</select>
+</mapper>

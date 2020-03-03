@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.leemon.wushiwan.mapper.SocialReviewChatMapper">
+
+	<select id="selectLastChat" resultType="com.leemon.wushiwan.entity.SocialReviewChat">
+		SELECT *
+		FROM social_review_chat
+		WHERE deleted = 0
+		  AND mission_accept_id = #{missionAcceptId}
+		ORDER BY previous_chat_id DESC
+		LIMIT 1
+	</select>
+
+	<select id="selectAllChat" resultType="com.leemon.wushiwan.entity.SocialReviewChat">
+		SELECT *
+		FROM social_review_chat
+		WHERE deleted = 0
+		  AND mission_accept_id = #{missionAcceptId}
+		ORDER BY previous_chat_id DESC
+	</select>
+
+</mapper>

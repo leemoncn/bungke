@@ -1,0 +1,94 @@
+custom:
+  service: 127.0.0.1
+  img-local-path: XXX
+  img-max-size: 3145728
+  mission-timeout-second: 1200 #20分钟
+  mission-reject-recommit-second: 43200 #12小时
+  mission-review-hour: 24 #24小时
+  qrcode-timeout-day: 3650 #十年过期
+  serverDomain: XXX
+  clientDomain: XXX
+  payNotifyUrl: ${custom.serverDomain}/notify/alipay
+  client-dist-path: XXX
+  wgt-file-path: XXX
+  alipay-transfer-name: XX
+  system-superior-id: 1 #所有没填上级的注册用户，挂到这个人名下
+  qiniu-access-key: XXX
+  qiniu-secret-key: XXX
+  qiniu-bucket-name: XXX
+  qiniu-kodo-notify-url: ${custom.serverDomain}/qiniu/kodo/upload-success
+  jenkins-server-url: XXX
+  jenkins-account: XXX
+  jenkins-password: XXX
+message:
+  appid: 000
+  appkey: XXX
+  template-id: 000
+  sms-sign: XXX
+  valid-minute: 5
+
+server:
+  port: 000
+spring:
+  cache:
+    type: REDIS
+  #  profiles:
+  #    active: prod
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    url: jdbc:mysql://${custom.service}:3306/freelancer?useUnicode=true&characterEncoding=utf-8
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: XXX
+    password: XXX
+    druid:
+      # 配置监控统计拦截的filters，去掉后监控界面sql无法统计，'wall'用于防火墙
+      filters: stat,wall
+      # 通过connectProperties属性来打开mergeSql功能；慢SQL记录
+      connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+      web-stat-filter:
+        enabled: true
+        url-pattern: "/*"
+        exclusions: "*.js,*.gif,*.jpg,*.bmp,*.png,*.css,*.ico,/druid/*"
+      stat-view-servlet:
+        enabled: true
+        url-pattern: "/druid/*"
+        reset-enable: true
+        login-username: XXX
+        login-password: XXX
+  redis:
+    host: ${custom.service}
+    port: 6379
+    password: XXX
+    timeout: 5000
+    lettuce:
+      pool:
+        max-active: 8
+  http:
+    log-request-details: true
+
+jwt:
+  header: Authorization
+  secret: XXX
+  expiration: 2592000 #单位秒，2592000是30天，3600是一小时,622080000是20年
+#  route:
+#    authentication:
+#      path: auth
+#      refresh: refresh
+#      register: "auth/register"
+
+logging.file: XXX
+logging:
+  level:
+    com.leemon.wushiwan.mapper: DEBUG
+    com.leemon.wushiwan.system.mapper: DEBUG
+    org.springframework.web: DEBUG
+    org.springframework.security: INFO
+  file:
+    max-history: 180
+
+mybatis-plus:
+  configuration:
+    #配置枚举解析处理器
+    default-enum-type-handler: com.baomidou.mybatisplus.extension.handlers.EnumTypeHandler
+  mapper-locations: classpath:/mapper/*Mapper.xml
+

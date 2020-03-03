@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.leemon.wushiwan.mapper.CoreMissionAcceptMapper">
+
+	<update id="updateAllMissionTimeout">
+		update core_mission_accept cma
+		set cma.proceed_property_id = 25,cma.finish_time = now()
+		where cma.proceed_property_id = 21
+		and (UNIX_TIMESTAMP(now()) - UNIX_TIMESTAMP(cma.accept_time)) > #{timeoutSecond}
+		<if test="userId != null">
+			AND cma.accept_user_id = #{userId}
+		</if>
+	</update>
+
+	<update id="updateAllMissionOverDeadline">
+		UPDATE core_mission cm
+		join core_mission_detail cmd ON cm.mission_detail_id = cmd.id
+		left join core_mission_accept cma ON cma.mission_id = cm.id and (cma.proceed_property_id IN (21,22))
+		SET cm.status_property_id = 30,cma.finish_time = now(),cma.proceed_property_id = 26
+		WHERE (cm.status_property_id = 28 or cm.status_property_id = 32)
+		AND cmd.deadline_time &lt;= now()
+		<if test="missionId != null">
+			AND cm.id = #{missionId}
+		</if>
+	</update>
+
+	<update id="updateMissionTextVerify">
+		UPDATE core_mission_accept cma
+		SET cma.proceed_property_id = 22,cma.upload_time = now()
+		<if test="textVerify != null and textVerify != ''">
+			, cma.text_verify = #{textVerify}
+		</if>
+		WHERE cma.accept_user_id = #{userId}
+		AND cma.mission_id = #{missionId}
+		AND (cma.proceed_property_id = 21 or (cma.proceed_property_id = 23 and cma.finish_time is null))
+		#待提交任务或者不合格但finish——time为null
+		AND deleted = 0
+	</update>
+
+	<update id="updateMissionReviewResult">
+		UPDATE core_mission_accept cma,
+		core_mission_detail cmd,
+		core_mission cm
+		<if test="result == true">
+			SET cma.proceed_property_id = 24,
+			cmd.count = cmd.count - 1,
+			cm.status_property_id = ( CASE WHEN cmd.count = 1 THEN 31 ELSE cm.status_property_id END ),
+			cma.finish_time = now(),
+		</if>
+		<if test="result == false">
+			SET cma.proceed_property_id = 23,
+			<if test="isFromComplaint == true">
+				cma.finish_time = now(),
+			</if>
+		</if>
+		cma.review_time = now(),
+		cma.updater = #{updater}
+		WHERE
+		cma.id = #{missionAcceptId}
+		AND cm.id = cma.mission_id
+		AND cmd.id = cm.mission_detail_id
+		AND cma.deleted = 0
+		AND cm.deleted = 0
+		AND cmd.deleted = 0
+	</update>
+
+	<update id="updateAllMissionNotRecommit">
+		update core_mission_accept cma
+		set cma.finish_time = now()
+		where cma.proceed_property_id = 23
+		and (UNIX_TIMESTAMP(now()) - UNIX_TIMESTAMP(cma.review_time)) > #{timeoutSecond}
+		<if test="userId != null">
+			AND cma.accept_user_id = #{userId}
+		</if>
+	</update>
+
+	<select id="selectMyAcceptMissionOrderByProceedPropertyId"
+			resultType="com.leemon.wushiwan.dto.MyAcceptMission">
+		SELECT cmd.*,cma.mission_id missionId,cma.proceed_property_id proceedPropertyId,
+		cma.accept_time acceptTime,cma.id acceptId,cma.finish_time finishTime,IF(cmc.id IS NULL, 1, 0) canComplaint,
+		cmc.result complaintResult
+		FROM core_mission_accept cma
+		LEFT JOIN core_mission_complaint cmc ON cma.id = cmc.mission_accept_id AND cmc.deleted = 0
+		JOIN core_mission cm ON cm.id = cma.mission_id AND cm.deleted = 0
+		JOIN core_mission_detail cmd ON cmd.id = cm.mission_detail_id AND cmd.deleted = 0
+		WHERE cma.accept_user_id = #{userId} AND cma.deleted = 0
+		<choose>
+			<when test="proceedPropertyId != null">
+				AND cma.proceed_property_id = #{proceedPropertyId}
+			</when>
+			<otherwise>
+				AND cma.proceed_property_id IN (21,22,23,24)
+			</otherwise>
+		</choose>
+	</select>
+	<select id="selectReviewMissionList"
+			resultType="com.leemon.wushiwan.controller.CoreMissionController$ReviewMissionListResponse">
+		SELECT cmd.*,
+		cma.id AS acceptId,
+		cm.id AS missionId,
+		cm.publish_time AS publishTime,
+		cm.top_end_time AS topEndTime,
+		cma.proceed_property_id,
+		cma.upload_time AS uploadTime,
+		cma.accept_user_id AS uploadUserId,
+		su.nickname AS uploadUserName
+		<include refid="com.leemon.wushiwan.mapper.CoreMissionDetailMapper.fromCmJoinCmd"/>
+		JOIN core_mission_accept cma ON cma.publish_user_id = #{publishUserId}
+		JOIN sys_user su ON su.id = cma.accept_user_id
+		AND cma.mission_id = cm.id
+		AND cma.proceed_property_id = #{proceedPropertyId}
+		WHERE cm.id = #{missionId}
+		AND cm.deleted = 0
+		AND cmd.deleted = 0
+	</select>
+
+	<select id="selectMissionAcceptInfo" resultType="com.leemon.wushiwan.vo.MissionAcceptVO">
+		select cma.*, IF(cmc.id IS NULL, 1, 0) canComplaint, cmc.result complaintResult
+		from core_mission_accept cma
+				 LEFT JOIN core_mission_complaint cmc ON cma.id = cmc.mission_accept_id AND cmc.deleted = 0
+		where cma.deleted = 0
+		  AND cma.id = #{acceptId}
+	</select>
+
+	<select id="selectInProgressAcceptList" resultType="com.leemon.wushiwan.entity.CoreMissionAccept">
+		select *
+		from core_mission_accept
+		where mission_id = #{missionId}
+		  and publish_user_id = #{publishUserId}
+		  and (proceed_property_id = 21 or proceed_property_id = 22)
+		  and deleted = 0
+	</select>
+
+	<select id="selectAllReviewTimeoutMission" resultType="com.leemon.wushiwan.entity.CoreMissionAccept">
+		SELECT *
+		FROM core_mission_accept cma
+		WHERE cma.proceed_property_id = 22
+		  AND (UNIX_TIMESTAMP(now()) - UNIX_TIMESTAMP(cma.upload_time)) > #{timeoutSecond}
+	</select>
+
+	<select id="getOneNeedReviewAccept" resultType="java.lang.Integer">
+		SELECT cma.id
+		FROM core_mission_accept cma
+		WHERE cma.mission_id = #{missionId}
+		  AND cma.proceed_property_id = 22
+		  AND cma.deleted = 0
+		ORDER BY accept_time
+		LIMIT 1
+	</select>
+</mapper>

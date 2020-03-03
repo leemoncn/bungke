@@ -1,0 +1,135 @@
+package ${bussiPackage}.${entityPackage}.controller;
+
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import javax.validation.Valid;
+
+import com.google.common.base.CaseFormat;
+import com.google.common.base.Strings;
+import com.leemon.wushiwan.enums.base.ErrorCode;
+import com.leemon.wushiwan.exception.LogicException;
+import ${bussiPackage}.${entityPackage}.entity.${entityName};
+import ${bussiPackage}.${entityPackage}.service.I${entityName}Service;
+import com.leemon.wushiwan.vo.IdRequest;
+import com.leemon.wushiwan.vo.IdsRequest;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import lombok.extern.slf4j.Slf4j;
+import com.leemon.wushiwan.controller.BaseController;
+
+/**
+ * @Description: ${tableVo.ftlDescription}
+ * @author: leemon
+ * @date: ${.now?string["yyyy-MM-dd"]}
+ */
+@RestController
+@RequestMapping("/${"${entityName}"?replace("([a-z])([A-Z]+)","$1-$2","r")?lower_case}")
+@Slf4j
+public class ${entityName}Controller extends BaseController<${entityName}> {
+
+	private final I${entityName}Service ${entityName?uncap_first}Service;
+
+	@Autowired
+	public ${entityName}Controller(I${entityName}Service ${entityName?uncap_first}Service) {
+		this.${entityName?uncap_first}Service = ${entityName?uncap_first}Service;
+	}
+
+	/**
+	 * 分页列表查询
+	 *
+	 * @param ${entityName?uncap_first}
+	 * @return
+	 */
+	@PreAuthorize("hasPermission('${tableName}')")
+	@RequestMapping(value = "/list")
+	public Object queryPageList(@RequestBody @Valid ${entityName} ${entityName?uncap_first}) {
+		Page<${entityName}> page = new Page<>(${entityName?uncap_first}.getPageNo(), ${entityName?uncap_first}.getPageSize());
+		return ${entityName?uncap_first}Service.page(page, getLikeQueryWrapper(${entityName?uncap_first}));
+	}
+
+	/**
+	 * 保存
+	 *
+	 * @param ${entityName?uncap_first}
+	 * @return
+	 */
+	@PreAuthorize("hasPermission('${tableName}_add')")
+	@RequestMapping(value = "/add")
+	public Object add(@RequestBody @Valid ${entityName} ${entityName?uncap_first}) {
+		if (${entityName?uncap_first}.getId() != null) {
+			throw new LogicException(ErrorCode.PARAMS_INVALID, "保存时不能设置id");
+		}
+		${entityName?uncap_first}Service.saveOrUpdate(${entityName?uncap_first});
+		return null;
+	}
+
+	/**
+	 * 编辑
+	 *
+	 * @param ${entityName?uncap_first}
+	 * @return
+	 */
+	@PreAuthorize("hasPermission('${tableName}_edit')")
+	@RequestMapping(value = "/edit")
+	public Object edit(@RequestBody @Valid ${entityName} ${entityName?uncap_first}) {
+		if (${entityName?uncap_first}.getId() == null) {
+			throw new LogicException(ErrorCode.PARAMS_INVALID, "更新时需要传入id");
+		}
+		boolean ok = ${entityName?uncap_first}Service.updateById(${entityName?uncap_first});
+		if (!ok) {
+			log.error("${entityName?uncap_first} = {}", ${entityName?uncap_first});
+			throw new LogicException(ErrorCode.SYS_ERROR, "更新${entityName}失败");
+		}
+
+		return null;
+	}
+
+	/**
+	 * 通过id删除
+	 *
+	 * @param idRequest
+	 * @return
+	 */
+	@PreAuthorize("hasPermission('${tableName}_delete')")
+	@RequestMapping(value = "/delete")
+	public Object delete(@RequestBody @Valid IdRequest idRequest) {
+		${entityName} ${entityName?uncap_first} = getExistEntityById(idRequest.getId(), ${entityName?uncap_first}Service);
+		boolean ok = ${entityName?uncap_first}Service.removeById(${entityName?uncap_first});
+		if (!ok) {
+			log.error("${entityName?uncap_first} = {}", ${entityName?uncap_first});
+			throw new LogicException(ErrorCode.SYS_ERROR, "更新${entityName}失败");
+		}
+
+		return null;
+	}
+
+	/**
+	 * 批量删除
+	 *
+	 * @param idsRequest
+	 * @return
+	 */
+	@PreAuthorize("hasPermission('${tableName}_delete')")
+	@RequestMapping(value = "/deleteBatch")
+	public Object deleteBatch(@RequestBody @Valid IdsRequest idsRequest) {
+		${entityName?uncap_first}Service.removeByIds(Arrays.asList(idsRequest.getIds().split(",")));
+		return null;
+	}
+
+	/**
+	 * 通过id查询
+	 *
+	 * @param idRequest
+	 * @return
+	 */
+	@PreAuthorize("hasPermission('${tableName}')")
+	@RequestMapping(value = "/queryById")
+	public Object queryById(@RequestBody @Valid IdRequest idRequest) {
+		return ${entityName?uncap_first}Service.getById(idRequest.getId());
+	}
+
+}

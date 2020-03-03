@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.leemon.wushiwan.mapper.ShopMapper">
+
+	<select id="selectShopDetail" resultType="com.leemon.wushiwan.dto.ShopDetail">
+		SELECT t1.count beComplaintCount,
+			   t2.count complaintCount,
+			   t3.count finishedOrderCount,
+			   t4.count acceptMissionCount
+		FROM (
+				 SELECT count(*) count
+				 FROM core_mission_complaint cmc
+						  LEFT JOIN core_mission_accept cma ON cma.id = cmc.mission_accept_id
+						  LEFT JOIN core_mission cm ON cm.id = cma.mission_id
+				 WHERE cm.user_id = #{userId}
+			 ) t1
+				 JOIN (SELECT count(*) count
+					   FROM core_mission_complaint cmc
+					   WHERE cmc.complainter_user_id = #{userId}) t2
+				 JOIN (SELECT count(*) count
+					   FROM core_mission_accept cma
+					   WHERE cma.proceed_property_id = 24
+						 AND cma.publish_user_id = #{userId}) t3
+				 JOIN (SELECT count(*) count FROM core_mission_accept cma WHERE cma.accept_user_id = #{userId}) t4
+	</select>
+</mapper>

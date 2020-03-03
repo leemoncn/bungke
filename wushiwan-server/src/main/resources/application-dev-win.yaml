@@ -1,0 +1,11 @@
+custom:
+  service: XXX
+  img-local-path: XXX
+  img-max-size: 3048576
+  serverDomain: XXX
+  clientDomain: XXX
+  client-dist-path: XXX
+  wgt-file-path: XXX
+logging.file: XXX
+
+

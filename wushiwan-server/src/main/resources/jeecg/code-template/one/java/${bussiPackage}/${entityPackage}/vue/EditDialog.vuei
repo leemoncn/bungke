@@ -1,0 +1,132 @@
+/**
+* @Author: leemon
+* @Date: ${.now}
+*/
+<template>
+  <div>
+    <el-dialog ref="dialogView" :title="getDialogTitle()" :visible.sync="isEditDialogShow" width="35%" height="300px"
+               @opened="dialogOpened" @open="dialogOpen" @close="dialogClose"  :close-on-click-modal="false">
+      <el-form :model="dialogModal" ref="dialogForm" :rules="dialogRules" label-position="left" label-width="80px"
+               :disabled="!editDialogEditable">
+
+      <#list columns as c>
+        <el-form-item label="${c.filedComment}" prop="${c.fieldName}">
+          <el-input v-model="dialogModal.${c.fieldName}"<#if c.fieldName == 'id'> disabled</#if>/>
+        </el-form-item>
+      </#list>
+
+      </el-form>
+
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="onCancelButtonPressed()">取消</el-button>
+        <el-button type="primary" @click="onConfirmButtonPressed()">确定</el-button>
+      </div>
+
+    </el-dialog>
+
+  </div>
+</template>
+
+<script>
+  import { ${entityName?upper_case}_ADD_URL, ${entityName?upper_case}_EDIT_URL } from "@/config/host"
+
+  const defaultDialogModal = {
+<#list columns as c>
+    ${c.fieldName}: null<#if c_has_next>,</#if>
+</#list>
+  }
+
+  export default {
+    name: "EditDialog",
+    props: {
+      editDialogVisible: {
+        type: Boolean,
+        required: true
+      },
+      editDialogData: {
+        type: Object
+      },
+      editDialogEditable: {
+        type: Boolean
+      }
+    },
+    computed: {
+      isEditDialogShow: {
+        get: function () {
+          return this.editDialogVisible
+        },
+        set: function (value) {
+          if (!value) {
+            this.closeEditDialog()
+          }
+        }
+      }
+    },
+    data () {
+      return {
+        dialogModal: _.cloneDeep(defaultDialogModal),
+        dialogRules: {
+		<#list columns as c>
+              <#if c.fieldName != 'id'>
+		      ${c.fieldName}: [{ required: true, message: "请输入${c.filedComment}", trigger: "blur" }]<#if c_has_next>,</#if>
+		      </#if>
+        </#list>
+        }
+      }
+    },
+    methods: {
+      getDialogTitle () {
+        if (!this.editDialogEditable) {
+          return "查看"
+        }
+        if (this.editDialogData) {
+          return "编辑"
+        }
+        return "添加"
+      },
+      onConfirmButtonPressed () {
+        if (!this.editDialogEditable) {
+          this.onCancelButtonPressed()
+          return
+        }
+        this.$refs.dialogForm.validate((valid) => {
+          if (valid) {
+          const url = this.dialogModal.id ? ${entityName?upper_case}_EDIT_URL : ${entityName?upper_case}_ADD_URL
+            this.httpPostWithLoading(url, this.dialogModal, ".el-dialog").then(({ data, success }) => {
+              if (success) {
+                this.$message({
+                  message: "菜单编辑成功",
+                  type: "success"
+                })
+                this.closeEditDialog()
+                this.reloadParentData()
+              }
+            })
+          }
+        })
+      },
+      onCancelButtonPressed () {
+        this.closeEditDialog()
+      },
+      dialogOpened () {
+        this.$refs.dialogForm.clearValidate()
+      },
+      dialogOpen () {
+        this.dialogModal = this.editDialogData ? _.cloneDeep(this.editDialogData) : _.cloneDeep(defaultDialogModal)
+      },
+      dialogClose () {
+        this.$refs.dialogView.$el.querySelector(".el-dialog__body").scrollTop = 0
+      },
+      closeEditDialog () {
+        this.$emit("update:editDialogVisible", false)
+      },
+      reloadParentData () {
+        this.$emit("reload")
+      }
+    }
+  }
+</script>
+
+<style scoped lang="css">
+
+</style>

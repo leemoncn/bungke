@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.leemon.wushiwan.system.mapper.SysRoleMenuMapper">
+	<delete id="deleteAllByRoleId">
+		DELETE
+		FROM sys_role_menu
+		WHERE role_id = #{roleId}
+	</delete>
+
+	<select id="selectSysRoleMenuByRoleName"
+			resultType="com.leemon.wushiwan.system.entity.SysRoleMenu">
+		SELECT srm.*
+		FROM sys_role_menu srm,
+			 sys_role sr
+		WHERE sr.role_name = #{roleName}
+		  AND srm.role_id = sr.id
+	</select>
+</mapper>

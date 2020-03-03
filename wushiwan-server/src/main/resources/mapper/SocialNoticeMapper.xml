@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.leemon.wushiwan.mapper.SocialNoticeMapper">
+
+	<select id="selectNoticeList" resultType="com.leemon.wushiwan.vo.NoticeVO">
+		select *
+		from social_notice sn
+		where sn.deleted = 0
+		  and (sn.user_id = #{userId} or sn.user_id is null)
+	</select>
+
+</mapper>

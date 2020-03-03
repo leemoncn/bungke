@@ -1,0 +1,11 @@
+custom:
+  service: XXX
+  img-local-path: XXX
+  img-max-size: 3048576
+  serverDomain: XXX
+  clientDomain: XXX
+  payNotifyUrl: ${custom.serverDomain}/notify/alipay
+  client-dist-path: XXX
+  wgt-file-path: XXX
+  qiniu-kodo-notify-url: ${custom.serverDomain}/qiniu/kodo/upload-success
+logging.file: XXX

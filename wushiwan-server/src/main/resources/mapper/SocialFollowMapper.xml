@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.leemon.wushiwan.mapper.SocialFollowMapper">
+
+	<select id="selectFollowedUserList" resultType="com.leemon.wushiwan.dto.FansDetail">
+		select su.nickname name,sf.create_time time,su.head_img_url headImgUrl,su.id id
+		from social_follow sf
+				 left join sys_user su on su.id = sf.to_user_id and su.deleted = 0
+		where sf.deleted = 0
+		  and sf.from_user_id = #{userId}
+	</select>
+
+	<select id="selectFansUserList" resultType="com.leemon.wushiwan.dto.FansDetail">
+		select su.nickname name,sf.create_time time,su.head_img_url headImgUrl,su.id id
+		from social_follow sf
+				 left join sys_user su on su.id = sf.from_user_id and su.deleted = 0
+		where sf.deleted = 0
+		  and sf.to_user_id = #{userId}
+
+	</select>
+
+	<select id="selectIfFollowedUser" resultType="java.lang.Boolean">
+		SELECT IF(count(1) > 0, 1, 0) isFollowed
+		FROM social_follow
+		WHERE from_user_id = #{fromUserId}
+		  AND to_user_id = #{toUserId}
+		  AND deleted = 0
+	</select>
+
+</mapper>

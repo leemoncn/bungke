@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.leemon.wushiwan.system.mapper.SysUserMapper">
+
+	<select id="selectSysUserDetailById" resultType="com.leemon.wushiwan.vo.SysUserDetail">
+		select su.*,cp.name partnerName,ca.recharge_by_app,ca.withdraw_by_user
+		from sys_user su
+				 join core_partner cp on cp.id = su.partner_id and cp.deleted = 0
+				 join core_agency ca on ca.id = su.agency_id and ca.deleted = 0
+		where su.id = #{userId}
+		  and su.deleted = 0
+	</select>
+</mapper>
