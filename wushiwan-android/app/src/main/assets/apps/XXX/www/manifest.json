@@ -1,0 +1,244 @@
+{
+  "launch_path": "dist/index.html",
+  "permissions": {
+    "Zip": {
+      "description": "文件压缩与解压缩"
+    },
+    "NativeUI": {
+      "description": "原生UI控件"
+    },
+    "Geolocation": {
+      "description": "访问位置信息"
+    },
+    "Invocation": {
+      "description": "使用Native.js能力"
+    },
+    "Downloader": {
+      "description": "文件下载管理"
+    },
+    "Runtime": {
+      "description": "访问运行期环境"
+    },
+    "Maps": {
+      "description": "管理地图插件"
+    },
+    "Events": {
+      "description": "应用扩展事件"
+    },
+    "Accelerometer": {
+      "description": "访问加速度感应器"
+    },
+    "Console": {
+      "description": "跟踪调试输出日志"
+    },
+    "NativeObj": {
+      "description": "原生对象"
+    },
+    "Camera": {
+      "description": "访问摄像头"
+    },
+    "Uploader": {
+      "description": "管理文件上传任务"
+    },
+    "Proximity": {
+      "description": "访问距离感应器"
+    },
+    "Device": {
+      "description": "访问设备信息"
+    },
+    "Navigator": {
+      "description": "浏览器信息"
+    },
+    "Webview": {
+      "description": "窗口管理"
+    },
+    "Orientation": {
+      "description": "访问方向感应器"
+    },
+    "OAuth": {},
+    "Storage": {
+      "description": "管理应用本地数据"
+    },
+    "Contacts": {
+      "description": "访问系统联系人信息"
+    },
+    "Barcode": {
+      "description": "管理二维码扫描插件"
+    },
+    "Gallery": {
+      "description": "访问系统相册"
+    },
+    "Messaging": {
+      "description": "短彩邮件插件"
+    },
+    "Speech": {
+      "description": "管理语音识别插件"
+    },
+    "XMLHttpRequest": {
+      "description": "跨域网络访问"
+    },
+    "Audio": {
+      "description": "访问麦克风"
+    },
+    "File": {
+      "description": "访问本地文件系统"
+    },
+    "Cache": {
+      "description": "管理应用缓存"
+    }
+  },
+  "name": "XXX",
+  "description": "",
+  "developer": {
+    "name": "",
+    "email": "",
+    "url": ""
+  },
+  "@platforms": [
+    "android",
+    "iPhone",
+    "iPad"
+  ],
+  "id": "XXX",
+  "icons": {
+    "72": "icon.png"
+  },
+  "version": {
+    "code": "1",
+    "name": "1.0.0"
+  },
+  "plus": {
+    "runmode": "normal",
+    "signature": "XXX",
+    "kernel": {
+      "ios": "WKWebview"
+    },
+    "popGesture": "close",
+    "splashscreen": {
+      "autoclose": true,
+      "waiting": true
+    },
+    "distribute": {
+      "apple": {
+        "p12": "",
+        "password": "",
+        "devices": "universal",
+        "frameworks": [],
+        "appid": "",
+        "mobileprovision": ""
+      },
+      "orientation": [
+        "portrait-primary"
+      ],
+      "plugins": {
+        "speech": {
+          "ifly": {}
+        },
+        "oauth": {
+          "weixin": {
+            "appid": "1",
+            "appsecret": "1"
+          }
+        }
+      },
+      "splashscreen": {
+        "android": {
+          "mdpi": "",
+          "ldpi": "",
+          "xxhdpi": "",
+          "hdpi": "",
+          "xhdpi": ""
+        },
+        "ios": {
+          "ipad": {
+            "portrait-retina": "",
+            "portrait7": "",
+            "landscape-retina7": "",
+            "landscape7": "",
+            "landscape-retina": "",
+            "portrait": "",
+            "landscape": "",
+            "portrait-retina7": ""
+          },
+          "iphone": {
+            "default": "",
+            "retina55": "",
+            "retina35": "",
+            "retina47": "",
+            "retina55l": "",
+            "retina40": ""
+          }
+        }
+      },
+      "google": {
+        "password": "",
+        "aliasname": "",
+        "permissions": [
+          "<uses-feature android:name=\"android.hardware.camera\"/>",
+          "<uses-feature android:name=\"android.hardware.camera.autofocus\"/>",
+          "<uses-permission android:name=\"android.permission.ACCESS_COARSE_LOCATION\"/>",
+          "<uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\"/>",
+          "<uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\"/>",
+          "<uses-permission android:name=\"android.permission.ACCESS_WIFI_STATE\"/>",
+          "<uses-permission android:name=\"android.permission.CALL_PHONE\"/>",
+          "<uses-permission android:name=\"android.permission.CAMERA\"/>",
+          "<uses-permission android:name=\"android.permission.CHANGE_NETWORK_STATE\"/>",
+          "<uses-permission android:name=\"android.permission.CHANGE_WIFI_STATE\"/>",
+          "<uses-permission android:name=\"android.permission.FLASHLIGHT\"/>",
+          "<uses-permission android:name=\"android.permission.GET_ACCOUNTS\"/>",
+          "<uses-permission android:name=\"android.permission.INTERNET\"/>",
+          "<uses-permission android:name=\"android.permission.MODIFY_AUDIO_SETTINGS\"/>",
+          "<uses-permission android:name=\"android.permission.MOUNT_UNMOUNT_FILESYSTEMS\"/>",
+          "<uses-permission android:name=\"android.permission.READ_CONTACTS\"/>",
+          "<uses-permission android:name=\"android.permission.READ_LOGS\"/>",
+          "<uses-permission android:name=\"android.permission.READ_PHONE_STATE\"/>",
+          "<uses-permission android:name=\"android.permission.RECORD_AUDIO\"/>",
+          "<uses-permission android:name=\"android.permission.VIBRATE\"/>",
+          "<uses-permission android:name=\"android.permission.WAKE_LOCK\"/>",
+          "<uses-permission android:name=\"android.permission.WRITE_CONTACTS\"/>",
+          "<uses-permission android:name=\"android.permission.WRITE_EXTERNAL_STORAGE\"/>",
+          "<uses-permission android:name=\"android.permission.WRITE_SETTINGS\"/>"
+        ],
+        "packagename": "",
+        "keystore": ""
+      },
+      "icons": {
+        "android": {
+          "mdpi": "",
+          "ldpi": "",
+          "xxhdpi": "",
+          "hdpi": "",
+          "xhdpi": ""
+        },
+        "ios": {
+          "auto": "",
+          "prerendered": true,
+          "ipad": {
+            "normal7": "",
+            "spotlight-normal7": "",
+            "normal": "",
+            "spotlight-retina": "",
+            "settings-retina": "",
+            "retina": "",
+            "spotlight-retina7": "",
+            "settings-normal": "",
+            "spotlight-normal": "",
+            "retina7": ""
+          },
+          "iphone": {
+            "normal": "",
+            "spotlight-retina": "",
+            "settings-retina": "",
+            "retina": "",
+            "spotlight-retina7": "",
+            "settings-retina8": "",
+            "settings-normal": "",
+            "retina8": "",
+            "spotlight-normal": "",
+            "retina7": ""
+          }
+        }
+      }
+    }
+  }
+}
