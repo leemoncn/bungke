@@ -7,4 +7,4 @@
 apk 下载地址： http://apk.bungke.com/bungke.apk  
 h5 演示地址：http://client.bungke.com
 
-# 有需要项目定制或二次开发的可以联系微信：mitao711
+# 有需要部署项目或二次开发的可以联系微信：mitao711
