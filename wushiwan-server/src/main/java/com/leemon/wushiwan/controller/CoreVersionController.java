@@ -188,7 +188,7 @@ public class CoreVersionController extends NoAuthBaseController<CoreVersion> {
 		}
 		coreVersion.setWgtFilename(this.createWgtFile(coreVersion));
 		coreVersion.setDeployed(true);
-		String cmd = String.format("sshpass -p limeng@3605 scp %s/%s root@111.231.134.217:/data/wushiwan-data/wgt/%s", config.getWgtFilePath(), coreVersion.getWgtFilename(), coreVersion.getWgtFilename());
+		String cmd = String.format("", config.getWgtFilePath(), coreVersion.getWgtFilename(), coreVersion.getWgtFilename());
 		log.info("开始向远程服务器拷贝，命令 = {}", cmd);
 		exeCmd(cmd);
 		log.info("拷贝命令执行完成");
@@ -214,7 +214,6 @@ public class CoreVersionController extends NoAuthBaseController<CoreVersion> {
 		}
 		coreVersionService.saveOrUpdate(coreVersion);
 		log.info("更新部署状态完成");
-//		sshpass -p limeng@3605 scp /data/wushiwan-data/wgt/H54790929_1.1.1_14.wgt root@111.231.134.217:/data/wushiwan-data/wgt/H54790929_1.1.1_14.wgt
 		return null;
 	}
 
