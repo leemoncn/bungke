@@ -12,7 +12,7 @@
   "dependencies": {
     "@nuintun/qrcode": "^0.36.1",
     "amfe-flexible": "^2.2.1",
-    "axios": "^0.18.0",
+    "axios": "^0.21.1",
     "decimal.js": "^10.2.0",
     "normalize.css": "^8.0.1",
     "qiniu-js": "^2.5.5",
