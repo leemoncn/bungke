@@ -19,7 +19,7 @@
     "lockr": "^0.8.5",
     "lodash": "^4.17.11",
     "lodash.pick": "^4.4.0",
-    "node-sass": "^4.13.0",
+    "node-sass": "^7.0.0",
     "normalize.css": "^8.0.1",
     "nprogress": "^0.2.0",
     "svg-sprite-loader": "^4.1.3",
